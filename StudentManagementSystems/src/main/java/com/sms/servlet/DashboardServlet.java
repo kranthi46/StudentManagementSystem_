@@ -1,6 +1,7 @@
 package com.sms.servlet;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,7 +17,8 @@ public class DashboardServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    private final StudentService studentService = new StudentService();
+    private final StudentService studentService =
+            new StudentService();
 
     @Override
     protected void doGet(
@@ -24,36 +26,67 @@ public class DashboardServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession(false);
+        /*
+         * Check login.
+         */
+        HttpSession session =
+                request.getSession(false);
 
         if (session == null ||
                 !Boolean.TRUE.equals(
                         session.getAttribute("loggedIn"))) {
 
             response.sendRedirect(
-                    request.getContextPath() + "/login"
+                    request.getContextPath()
+                            + "/login"
             );
 
             return;
         }
 
+        /*
+         * Total students.
+         */
         request.setAttribute(
                 "totalStudents",
                 studentService.getTotalStudents()
         );
 
+        /*
+         * Male students.
+         */
         request.setAttribute(
                 "maleStudents",
                 studentService.getMaleStudents()
         );
 
+        /*
+         * Female students.
+         */
         request.setAttribute(
                 "femaleStudents",
                 studentService.getFemaleStudents()
         );
 
+        /*
+         * Department-wise student count.
+         */
+        Map<String, Integer> departmentCounts =
+                studentService.getDepartmentCounts();
+
+        request.setAttribute(
+                "departmentCounts",
+                departmentCounts
+        );
+
+        /*
+         * Open dashboard.
+         */
         request.getRequestDispatcher(
                 "/views/dashboard.jsp"
-        ).forward(request, response);
+        ).forward(
+                request,
+                response
+        );
     }
 }
