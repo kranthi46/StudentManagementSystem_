@@ -27,7 +27,31 @@ public class StudentServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Check whether user is logged in
+        /*
+         * Prevent browser from caching the Students page.
+         *
+         * This ensures that after logout, clicking
+         * the browser Back button cannot display
+         * an old cached Students page.
+         */
+        response.setHeader(
+                "Cache-Control",
+                "no-cache, no-store, must-revalidate"
+        );
+
+        response.setHeader(
+                "Pragma",
+                "no-cache"
+        );
+
+        response.setDateHeader(
+                "Expires",
+                0
+        );
+
+        /*
+         * Check whether user is logged in.
+         */
         HttpSession session =
                 request.getSession(false);
 
@@ -42,13 +66,17 @@ public class StudentServlet extends HttpServlet {
             return;
         }
 
-        // Get search keyword from URL
+        /*
+         * Get search keyword from URL.
+         */
         String search =
                 request.getParameter("search");
 
         List<Student> students;
 
-        // No search text -> show all students
+        /*
+         * No search text -> show all students.
+         */
         if (search == null ||
                 search.trim().isEmpty()) {
 
@@ -59,27 +87,37 @@ public class StudentServlet extends HttpServlet {
 
         } else {
 
-            // Remove unnecessary spaces
+            /*
+             * Remove unnecessary spaces.
+             */
             search = search.trim();
 
-            // Search students
+            /*
+             * Search students.
+             */
             students =
                     studentService.searchStudents(search);
         }
 
-        // Send student list to JSP
+        /*
+         * Send student list to JSP.
+         */
         request.setAttribute(
                 "students",
                 students
         );
 
-        // Send search text to JSP
+        /*
+         * Send search text to JSP.
+         */
         request.setAttribute(
                 "search",
                 search
         );
 
-        // Open Students page
+        /*
+         * Open Students page.
+         */
         request.getRequestDispatcher(
                 "/views/students.jsp"
         ).forward(request, response);

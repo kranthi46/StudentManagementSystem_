@@ -27,6 +27,28 @@ public class DashboardServlet extends HttpServlet {
             throws ServletException, IOException {
 
         /*
+         * Prevent browser from caching the dashboard.
+         *
+         * This is important because after logout,
+         * the browser should not display the old dashboard
+         * when the user clicks the Back button.
+         */
+        response.setHeader(
+                "Cache-Control",
+                "no-cache, no-store, must-revalidate"
+        );
+
+        response.setHeader(
+                "Pragma",
+                "no-cache"
+        );
+
+        response.setDateHeader(
+                "Expires",
+                0
+        );
+
+        /*
          * Check login.
          */
         HttpSession session =

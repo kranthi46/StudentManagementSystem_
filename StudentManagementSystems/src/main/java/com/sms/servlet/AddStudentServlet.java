@@ -26,7 +26,14 @@ public class AddStudentServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Check login
+        /*
+         * Prevent browser from caching the Add Student page.
+         */
+        setNoCacheHeaders(response);
+
+        /*
+         * Check login.
+         */
         if (!isLoggedIn(request)) {
 
             response.sendRedirect(
@@ -36,7 +43,9 @@ public class AddStudentServlet extends HttpServlet {
             return;
         }
 
-        // Open Add Student page
+        /*
+         * Open Add Student page.
+         */
         request.getRequestDispatcher(
                 "/views/add-student.jsp"
         ).forward(request, response);
@@ -48,7 +57,14 @@ public class AddStudentServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Check login
+        /*
+         * Prevent browser from caching the response.
+         */
+        setNoCacheHeaders(response);
+
+        /*
+         * Check login.
+         */
         if (!isLoggedIn(request)) {
 
             response.sendRedirect(
@@ -60,7 +76,9 @@ public class AddStudentServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        // Get form values
+        /*
+         * Get form values.
+         */
         String studentId =
                 request.getParameter("studentId");
 
@@ -91,7 +109,9 @@ public class AddStudentServlet extends HttpServlet {
         String address =
                 request.getParameter("address");
 
-        // Create Student object
+        /*
+         * Create Student object.
+         */
         Student student = new Student(
                 studentId,
                 name,
@@ -105,13 +125,17 @@ public class AddStudentServlet extends HttpServlet {
                 address
         );
 
-        // Save student
+        /*
+         * Save student.
+         */
         boolean added =
                 studentService.addStudent(student);
 
         if (added) {
 
-            // Successfully added
+            /*
+             * Successfully added.
+             */
             response.sendRedirect(
                     request.getContextPath()
                             + "/students?message=Student+added+successfully"
@@ -119,7 +143,9 @@ public class AddStudentServlet extends HttpServlet {
 
         } else {
 
-            // Student ID already exists
+            /*
+             * Student ID already exists.
+             */
             request.setAttribute(
                     "error",
                     "Student ID already exists."
@@ -136,6 +162,31 @@ public class AddStudentServlet extends HttpServlet {
         }
     }
 
+    /*
+     * Prevent the browser from caching protected pages.
+     */
+    private void setNoCacheHeaders(
+            HttpServletResponse response) {
+
+        response.setHeader(
+                "Cache-Control",
+                "no-cache, no-store, must-revalidate"
+        );
+
+        response.setHeader(
+                "Pragma",
+                "no-cache"
+        );
+
+        response.setDateHeader(
+                "Expires",
+                0
+        );
+    }
+
+    /*
+     * Check whether the user is logged in.
+     */
     private boolean isLoggedIn(
             HttpServletRequest request) {
 

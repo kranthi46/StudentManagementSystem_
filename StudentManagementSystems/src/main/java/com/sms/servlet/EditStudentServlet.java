@@ -26,6 +26,14 @@ public class EditStudentServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
+        /*
+         * Prevent browser from caching the Edit Student page.
+         */
+        setNoCacheHeaders(response);
+
+        /*
+         * Check login.
+         */
         if (!isLoggedIn(request)) {
 
             response.sendRedirect(
@@ -35,6 +43,9 @@ public class EditStudentServlet extends HttpServlet {
             return;
         }
 
+        /*
+         * Get student ID.
+         */
         String id = request.getParameter("id");
 
         if (id == null || id.trim().isEmpty()) {
@@ -47,6 +58,9 @@ public class EditStudentServlet extends HttpServlet {
             return;
         }
 
+        /*
+         * Get student.
+         */
         Student student =
                 studentService.getStudent(id);
 
@@ -60,11 +74,17 @@ public class EditStudentServlet extends HttpServlet {
             return;
         }
 
+        /*
+         * Send student to JSP.
+         */
         request.setAttribute(
                 "student",
                 student
         );
 
+        /*
+         * Open Edit Student page.
+         */
         request.getRequestDispatcher(
                 "/views/edit-student.jsp"
         ).forward(request, response);
@@ -76,6 +96,14 @@ public class EditStudentServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
+        /*
+         * Prevent browser from caching the response.
+         */
+        setNoCacheHeaders(response);
+
+        /*
+         * Check login.
+         */
         if (!isLoggedIn(request)) {
 
             response.sendRedirect(
@@ -87,6 +115,9 @@ public class EditStudentServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
+        /*
+         * Get form values.
+         */
         String studentId =
                 request.getParameter("studentId");
 
@@ -117,6 +148,9 @@ public class EditStudentServlet extends HttpServlet {
         String address =
                 request.getParameter("address");
 
+        /*
+         * Create Student object.
+         */
         Student student = new Student(
                 studentId,
                 name,
@@ -130,11 +164,17 @@ public class EditStudentServlet extends HttpServlet {
                 address
         );
 
+        /*
+         * Update student.
+         */
         boolean updated =
                 studentService.updateStudent(student);
 
         if (updated) {
 
+            /*
+             * Successfully updated.
+             */
             response.sendRedirect(
                     request.getContextPath()
                             + "/students?message=Student+updated+successfully"
@@ -142,6 +182,9 @@ public class EditStudentServlet extends HttpServlet {
 
         } else {
 
+            /*
+             * Update failed.
+             */
             request.setAttribute(
                     "error",
                     "Unable to update student."
@@ -158,6 +201,31 @@ public class EditStudentServlet extends HttpServlet {
         }
     }
 
+    /*
+     * Prevent browser from caching protected pages.
+     */
+    private void setNoCacheHeaders(
+            HttpServletResponse response) {
+
+        response.setHeader(
+                "Cache-Control",
+                "no-cache, no-store, must-revalidate"
+        );
+
+        response.setHeader(
+                "Pragma",
+                "no-cache"
+        );
+
+        response.setDateHeader(
+                "Expires",
+                0
+        );
+    }
+
+    /*
+     * Check whether the user is logged in.
+     */
     private boolean isLoggedIn(
             HttpServletRequest request) {
 

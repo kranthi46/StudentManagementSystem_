@@ -26,6 +26,30 @@ public class StudentDetailsServlet extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
 
+        /*
+         * Prevent browser from caching the Student Details page.
+         *
+         * This prevents the browser Back button from
+         * displaying student details after logout.
+         */
+        response.setHeader(
+                "Cache-Control",
+                "no-cache, no-store, must-revalidate"
+        );
+
+        response.setHeader(
+                "Pragma",
+                "no-cache"
+        );
+
+        response.setDateHeader(
+                "Expires",
+                0
+        );
+
+        /*
+         * Check whether user is logged in.
+         */
         if (!isLoggedIn(request)) {
 
             response.sendRedirect(
@@ -35,6 +59,9 @@ public class StudentDetailsServlet extends HttpServlet {
             return;
         }
 
+        /*
+         * Get student ID from request.
+         */
         String id = request.getParameter("id");
 
         if (id == null || id.trim().isEmpty()) {
@@ -47,6 +74,9 @@ public class StudentDetailsServlet extends HttpServlet {
             return;
         }
 
+        /*
+         * Get student from storage.
+         */
         Student student =
                 studentService.getStudent(id);
 
@@ -60,16 +90,25 @@ public class StudentDetailsServlet extends HttpServlet {
             return;
         }
 
+        /*
+         * Send student information to JSP.
+         */
         request.setAttribute(
                 "student",
                 student
         );
 
+        /*
+         * Open Student Details page.
+         */
         request.getRequestDispatcher(
                 "/views/student-details.jsp"
         ).forward(request, response);
     }
 
+    /*
+     * Check whether the user is logged in.
+     */
     private boolean isLoggedIn(
             HttpServletRequest request) {
 
